@@ -14,36 +14,30 @@ int main()
     size_t total = 0;
 
     printf("Configure server...\n");
-	fd_set original_socket;
+	fd_set si_other;
 	fd_set original_stdin;
-	fd_set readfds;
 	struct timeval timeout = {.tv_sec = TIMEOUT, .tv_usec = 0};
-    struct sockaddr_in server_address;
+    struct sockaddr_in si_me;
 
-    int socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
-	if (socket_fd == -1)
+    int s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if (s == -1)
 	{
 		printf("Error in socket(): %d\n", errno);
 		return -1;
 	}
 
-	fcntl(socket_fd, F_SETFL, fcntl(socket_fd, F_GETFL) | O_NONBLOCK);
+//	fcntl(s, F_SETFL, fcntl(s, F_GETFL) | O_NONBLOCK);
 
-	FD_ZERO(&original_socket);
-	FD_ZERO(&original_stdin);
-	FD_ZERO(&readfds);
+	FD_ZERO(&si_other);
+	FD_SET(s, &si_other);
 
-	FD_SET(socket_fd, &original_socket);
-	FD_SET(socket_fd, &readfds);
-	FD_SET(0,&original_stdin);
-
-	server_address.sin_family = AF_INET;
-	server_address.sin_port = htons(PORT);
-	server_address.sin_addr.s_addr = INADDR_ANY;
-	bzero(&(server_address.sin_zero),8);
+	bzero(&(si_me.sin_zero),8);
+	si_me.sin_family = AF_INET;
+	si_me.sin_port = htons(PORT);
+	si_me.sin_addr.s_addr = INADDR_ANY;
 
     printf("Bind socket...\n");
-	if (bind(socket_fd,(struct sockaddr *)&server_address, sizeof(struct sockaddr)) == -1)
+	if (bind(s,(struct sockaddr *)&si_me, sizeof(si_me)) == -1)
 	{
 		printf("Error in bind(): %d\n", errno);
 		return -1;
@@ -53,8 +47,7 @@ int main()
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
 	do
 	{
-		readfds = original_socket;
-        int receive = select(socket_fd + 1, &readfds, NULL, NULL, &timeout);
+        int receive = select(s + 1, &si_other, NULL, NULL, &timeout);
 
         if (receive == 0)
         {
@@ -68,7 +61,7 @@ int main()
 		}
 		else
 		{
-            total += recv(socket_fd, &buffer[total], sizeof(buffer), 0);;
+            total += recv(s, &buffer[total], sizeof(buffer), 0);;
             frames++;
         }
     } while(frames <= SUBIMAGES * FRAMES_PER_SUBIMAGES);
@@ -77,9 +70,9 @@ int main()
     uint64_t delta_us = (end.tv_sec - start.tv_sec) * 1000000 +
                         (end.tv_nsec - start.tv_nsec) / 1000;
 
-  	printf("Total bytes read %ld\n", total);
+	printf("Total bytes read %ld\n", total);
     printf("Time to receive %ld subimages: %f[s]\n", total / FRAMES_PER_SUBIMAGES, delta_us / 1e6f);
     printf("Finished...\n");
-	close (socket_fd);
+	close(s);
 	return 0;
 }

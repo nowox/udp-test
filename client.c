@@ -38,13 +38,6 @@ int main(int argc, char **argv)
     server.sin_addr.s_addr = inet_addr(SERVERADDRESS);
     server.sin_port = htons(PORT);
 
-    printf("Bind socket...\n");
-	if (bind(sockfd,(struct sockaddr *)&server, sizeof(struct sockaddr)) == -1)
-	{
-		fprintf(stderr, "Error in bind(): %d\n", errno);
-		return -1;
-	}
-
     printf("Send UDP data...\n");
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     for (size_t i = 0; i < BUFFER_SIZE; i += UDP_FRAME)
