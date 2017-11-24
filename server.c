@@ -1,20 +1,6 @@
 /**
  * UDP Server.
  */
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <time.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/select.h>
-#include <sys/fcntl.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-
 #include "common.h"
 
 #define TIMEOUT (5)
@@ -88,13 +74,10 @@ int main()
     } while(frames <= SUBIMAGES * FRAMES_PER_SUBIMAGES);
     clock_gettime(CLOCK_MONOTONIC_RAW, &end);
 
-    printf("Total sub-images %d\n", SUBIMAGES);
-	printf("Total frames %d\n", frames);
-	printf("Total bytes read %ld\n", total);
-
     uint64_t delta_us = (end.tv_sec - start.tv_sec) * 1000000 +
                         (end.tv_nsec - start.tv_nsec) / 1000;
 
+  	printf("Total bytes read %ld\n", total);
     printf("Time to receive %ld subimages: %f[s]\n", total / FRAMES_PER_SUBIMAGES, delta_us / 1e6f);
     printf("Finished...\n");
 	close (socket_fd);
