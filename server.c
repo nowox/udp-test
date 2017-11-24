@@ -64,6 +64,8 @@ int main()
 
     printf("Total bytes read %ld\n", total);
     printf("Time to receive %ld subimages: %f[s]\n", total / FRAMES_PER_SUBIMAGES, delta_us / 1e6f);
+
+    printf("Estimated bandwidth %0.3f Mbits/s\n", (float)total / delta_us);
     printf("Finished...\n");
     close(s);
     return 0;
