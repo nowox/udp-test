@@ -1,0 +1,14 @@
+#ifndef COMMON_H
+#define COMMON_H
+
+#define PORT (3000)
+
+#define SUBIMAGES (1000)
+#define FRAMES_PER_SUBIMAGES (23)
+#define UDP_FRAME (1442)
+
+#define SERVERADDRESS "138.131.156.36"
+
+#define BUFFER_SIZE (SUBIMAGES * FRAMES_PER_SUBIMAGES * UDP_FRAME)
+
+#endif /* COMMON_H */
