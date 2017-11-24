@@ -42,8 +42,10 @@ int main(int argc, char **argv)
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     for (size_t i = 0; i < BUFFER_SIZE; i += UDP_FRAME)
     {
+        memcpy(&buffer[i], "MILA", 4);
+        *(int32_t*)(&buffer[i + 4]) = i;
         if (sendto(sockfd, &buffer[i], UDP_FRAME, 0,
-                   (const struct sockaddr*)&server, sizeof(server)) < 0)
+                    (const struct sockaddr*)&server, sizeof(server)) < 0)
         {
             fprintf(stderr, "Error in sendto()\n");
             return EXIT_FAILURE;
@@ -51,7 +53,7 @@ int main(int argc, char **argv)
     }
     clock_gettime(CLOCK_MONOTONIC_RAW, &end);
     uint64_t delta_us = (end.tv_sec - start.tv_sec) * 1000000 +
-                        (end.tv_nsec - start.tv_nsec) / 1000;
+        (end.tv_nsec - start.tv_nsec) / 1000;
 
     printf("Time to send %d subimages: %f[s]\n", SUBIMAGES, delta_us / 1e6f);
     printf("Finished...\n");

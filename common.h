@@ -26,4 +26,9 @@
 
 #define BUFFER_SIZE (SUBIMAGES * FRAMES_PER_SUBIMAGES * UDP_FRAME)
 
+struct Frame {
+    char code[4];
+    int32_t counter;
+};
+
 #endif /* COMMON_H */
