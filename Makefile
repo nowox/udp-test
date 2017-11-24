@@ -1,8 +1,8 @@
 all: client server
 
-client: client.c
+client: client.c common.h
 	$(CC) $< -o $@
 
-server: server.c
+server: server.c common.h
 	$(CC) $< -o $@
 
